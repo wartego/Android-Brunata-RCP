@@ -1,10 +1,13 @@
 package pl.sda.myapplication;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,8 +23,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 import pl.sda.myapplication.databinding.ActivityMainBinding;
+import pl.sda.myapplication.ui.gallery.GalleryFragment;
 import pl.sda.myapplication.ui.home.sendRequest.HttpSendRequest;
 import pl.sda.myapplication.ui.home.sendRequest.LoginAndPassword;
 import pl.sda.myapplication.ui.home.sendRequest.TypeEnum;
@@ -34,15 +41,22 @@ public class MainActivity extends AppCompatActivity {
     Button sendButton;
     EditText login;
     EditText password;
+    String loginText;
+    String passwordText;
 
     TextView textView;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
@@ -79,34 +93,43 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    @SuppressLint("SetTextI18n")
     public void actionnnn(View view) {
-        final String[] respondFromPost = new String[1];
         sendButton = (Button) findViewById(R.id.button3);
-        login = (EditText) findViewById(R.id.textLogin);
-        password = (EditText) findViewById(R.id.textPassword);
+
+        textView = (TextView) findViewById(R.id.textViewResponse);
+
+
 
         LoginAndPassword loginAndPassword = new LoginAndPassword("Tomasz.Rochala","Tomasz.Rochala", TypeEnum.LOGIN);
 
+
         sendButton.setOnClickListener(v -> {
-            HttpSendRequest httpSendRequest = new HttpSendRequest();
-            //setContentView(R.layout.fragment_gallery);
+            String respondFromPost;
+//            HttpSendRequest httpSendRequest = new HttpSendRequest();
+//            httpSendRequest.setLoginAndPassword(loginAndPassword);
+         //   setContentView(R.layout.fragment_gallery);
+            // httpSendRequest.getSendRequest();
+
+            Callable<String> returnPost = new HttpSendRequest(loginAndPassword);
+            FutureTask<String> futureTask = new FutureTask<>(returnPost);
+            Thread thread = new Thread(futureTask);
+            thread.start();
+
+
             try {
-               // httpSendRequest.getSendRequest();
-                respondFromPost[0] = httpSendRequest.postSendRequest(loginAndPassword);
-
-                textView = (TextView) findViewById(R.id.textViewResponse);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                Thread.sleep(10000);
-
-                Log.i("New tag", respondFromPost[0]);
-                textView.setText( respondFromPost[0]);
+                Thread.sleep(5000);
+                respondFromPost = futureTask.get();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
             }
+
+            Log.i("New tag", respondFromPost);
+                textView.setText(respondFromPost);
+
+
 
 //            new Handler().postDelayed(new Runnable() {
 //                @Override
