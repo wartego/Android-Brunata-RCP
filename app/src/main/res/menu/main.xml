@@ -9,5 +9,6 @@
     <item
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Set Login and password" />
+        android:onClick="onLoginSettingClick"
+        android:title="@string/login_and_password" />
 </menu>

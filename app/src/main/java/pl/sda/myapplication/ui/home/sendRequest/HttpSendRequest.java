@@ -118,7 +118,7 @@ public class HttpSendRequest implements Callable {
         try {
             try{
                 System.out.println("hidsds");
-                URL url = new URL("http://192.168.1.5:5555/api/login");
+                URL url = new URL("http://192.168.6.105:5555/api/login");
                 // final String URL = ;
                 HttpURLConnection client = null;
 
@@ -130,7 +130,7 @@ public class HttpSendRequest implements Callable {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("login", loginAndPassword.getLogin());
                 jsonObject.put("password",loginAndPassword.getPassword());
-                jsonObject.put("typeEnum","LOGIN");
+                jsonObject.put("typeEnum",loginAndPassword.getTypeEnum());
 
                 OutputStreamWriter os = new OutputStreamWriter(client.getOutputStream());
                 os.write(jsonObject.toString());
