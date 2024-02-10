@@ -1,5 +1,8 @@
 package pl.sda.myapplication.ui.home.sendRequest;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -11,6 +14,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
+
+import pl.sda.myapplication.LoginActivity;
 
 public class HttpSendRequest implements Callable {
 
@@ -117,10 +122,13 @@ public class HttpSendRequest implements Callable {
 
         try {
             try{
-                System.out.println("hidsds");
-                URL url = new URL("http://192.168.6.105:5555/api/login");
+
+                String ipAddress = loginAndPassword.getIp();
+
+                URL url = new URL(String.format("http://%s:5555/api/login",ipAddress));
                 // final String URL = ;
                 HttpURLConnection client = null;
+                Log.i("MY TAG","SENDED REQUEST");
 
                 client = (HttpURLConnection) url.openConnection();
                 client.setRequestMethod("POST");

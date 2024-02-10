@@ -2,13 +2,16 @@ package pl.sda.myapplication;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -31,17 +34,19 @@ import pl.sda.myapplication.ui.home.sendRequest.LoginAndPassword;
 import pl.sda.myapplication.ui.home.sendRequest.TypeEnum;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String SHARED_PREFS = "sharedPrefs";
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
-    Button sendButton;
-    EditText login;
-    EditText password;
-    String loginText;
-    String passwordText;
+    private String login, password, ip;
 
+    Button sendButton;
+    TextView currentlogin , currentPassword, currentIP;
     TextView textView;
+
+    private RadioButton selectedRadioButton;
+    private RadioGroup radioGroup;
 
 
 
@@ -74,6 +79,31 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+            //SharedPreferences
+        SharedPreferences myPreferences = getSharedPreferences(LoginActivity.SHARED_PREFS,MODE_PRIVATE);
+        login = myPreferences.getString(LoginActivity.LOGIN,"");
+        password = myPreferences.getString(LoginActivity.PASSWORD,"");
+        ip = myPreferences.getString(LoginActivity.IP_ADDRESS,"");
+
+        Log.i("MY GAT", "login: " + login);
+        Log.i("MY GAT", "Password: "  + password);
+        Log.i("MY GAT", "Password: "  + ip);
+
+
+            //
+            currentlogin = findViewById(R.id.textLoginCurrent);
+            currentPassword = findViewById(R.id.textPasswordCurrent);
+            currentIP = findViewById(R.id.textIPCurrent);
+
+            currentlogin.setText(login);
+            currentPassword.setText(password);
+            currentIP.setText(ip);
+            //
+        radioGroup = (RadioGroup) findViewById(R.id.radioGroupID);
+
+
+
     }
 
     @Override
@@ -95,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
-
     @SuppressLint("SetTextI18n")
     public void actionnnn(View view) {
         sendButton = (Button) findViewById(R.id.button3);
@@ -104,10 +133,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        LoginAndPassword loginAndPassword = new LoginAndPassword("Tomasz.Rochala","Tomasz.Rochala", TypeEnum.LOGOUT);
-
 
         sendButton.setOnClickListener(v -> {
+            int selectedIdRadio = radioGroup.getCheckedRadioButtonId();
+            selectedRadioButton = (RadioButton) findViewById(selectedIdRadio);
+
+            TypeEnum selectedRadioText = TypeEnum.valueOf(selectedRadioButton.getText().toString());
+
+            LoginAndPassword loginAndPassword = new LoginAndPassword(login,password, ip, selectedRadioText);
             String respondFromPost;
 //            HttpSendRequest httpSendRequest = new HttpSendRequest();
 //            httpSendRequest.setLoginAndPassword(loginAndPassword);
