@@ -1,5 +1,5 @@
 package pl.sda.myapplication.ui.home.sendRequest;
 
 public enum TypeEnum {
-    LOGIN,LOGOUT
+    LOGIN,LOGOUT, CHECK,BRAKE
 }
