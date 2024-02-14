@@ -35,6 +35,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.core:core:1.12.0")
     implementation("org.modelmapper:modelmapper:0.7.4")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -42,8 +43,8 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.navigation:navigation-fragment:2.7.6")
-    implementation("androidx.navigation:navigation-ui:2.7.6")
+    implementation("androidx.navigation:navigation-fragment:2.7.7")
+    implementation("androidx.navigation:navigation-ui:2.7.7")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("androidx.preference:preference:1.2.1")
     implementation("androidx.mediarouter:mediarouter:1.6.0")

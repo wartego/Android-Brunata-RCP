@@ -112,6 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30px"
                 android:layout_weight="1"
+                android:onClick="actionCancelButton"
                 android:paddingLeft="30px"
                 android:text="@android:string/cancel" />
         </LinearLayout>

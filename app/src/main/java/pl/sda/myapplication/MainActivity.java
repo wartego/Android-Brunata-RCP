@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,7 +13,6 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -24,6 +25,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -55,10 +57,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        //
 
+
+
+
+
+
+        //
+        setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
@@ -80,30 +88,35 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-            //SharedPreferences
+        getPreferencedFromSettingsLogin();
+        //
+        updateProperties();
+        radioGroup = (RadioGroup) findViewById(R.id.radioGroupID);
+
+
+
+    }
+
+    public void getPreferencedFromSettingsLogin() {
+        //SharedPreferences
         SharedPreferences myPreferences = getSharedPreferences(LoginActivity.SHARED_PREFS,MODE_PRIVATE);
         login = myPreferences.getString(LoginActivity.LOGIN,"");
         password = myPreferences.getString(LoginActivity.PASSWORD,"");
         ip = myPreferences.getString(LoginActivity.IP_ADDRESS,"");
 
-        Log.i("MY GAT", "login: " + login);
-        Log.i("MY GAT", "Password: "  + password);
-        Log.i("MY GAT", "Password: "  + ip);
+//        Log.i("MY GAT", "login: " + login);
+//        Log.i("MY GAT", "Password: "  + password);
+//        Log.i("MY GAT", "Password: "  + ip);
 
 
-            //
-            currentlogin = findViewById(R.id.textLoginCurrent);
-            currentPassword = findViewById(R.id.textPasswordCurrent);
-            currentIP = findViewById(R.id.textIPCurrent);
+        //
+        currentlogin = findViewById(R.id.textLoginCurrent);
+        currentPassword = findViewById(R.id.textPasswordCurrent);
+        currentIP = findViewById(R.id.textIPCurrent);
 
-            currentlogin.setText(login);
-            currentPassword.setText(password);
-            currentIP.setText(ip);
-            //
-        radioGroup = (RadioGroup) findViewById(R.id.radioGroupID);
-
-
-
+        currentlogin.setText(login);
+        currentPassword.setText(password);
+        currentIP.setText(ip);
     }
 
     @Override
@@ -126,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     @SuppressLint("SetTextI18n")
-    public void actionnnn(View view) {
+    public void actionOnSendButton(View view) {
         sendButton = (Button) findViewById(R.id.button3);
 
         textView = (TextView) findViewById(R.id.textViewResponse);
@@ -153,18 +166,7 @@ public class MainActivity extends AppCompatActivity {
             thread.start();
 
 
-            try {
-                Thread.sleep(5000);
-                respondFromPost = futureTask.get();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-
-            Log.i("New tag", respondFromPost);
-                textView.setText(respondFromPost);
-
+            waitingForRespondFromRCP(futureTask);
 
 
 //            new Handler().postDelayed(new Runnable() {
@@ -175,6 +177,78 @@ public class MainActivity extends AppCompatActivity {
 //            }, 1000);
 
         });
+    }
+
+    private void waitingForRespondFromRCP(FutureTask<String> futureTask) {
+        Thread thread = new Thread() {
+
+            @Override
+            public void run() {
+//                while (!isInterrupted()) {
+//                   // Thread.sleep(5000);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            String respondFromPost;
+//                            try {
+//                              //  Thread.sleep(5000);
+//                                respondFromPost = futureTask.get();
+//                                Log.i("New tag", respondFromPost);
+//                                textView.setText(respondFromPost);
+//                            } catch (InterruptedException | ExecutionException e) {
+//                                throw new RuntimeException(e);
+//                            }
+//                        }
+//                    });
+//                }
+
+                
+                long start = System.currentTimeMillis();
+                long end = start + 15 * 1000;
+                while (System.currentTimeMillis() < end){
+                    Optional<String> respondFromPost;
+                    //  Thread.sleep(5000);opt
+                    try {
+                        Log.i("Waiting for repspond" , "Started waiting for repond");
+                        respondFromPost  = Optional.ofNullable(futureTask.get());
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Log.i("New tag", respondFromPost.orElse("No respond"));
+                    textView.setText(respondFromPost.orElse("No respond from server"));
+
+                }
+                Log.i("OUT OF RESPOND" , "NOT RESPOND OR RECEIVED RESPOND");
+
+            }
+        };
+
+        thread.start();
+
+    }
+
+    public void updateProperties(){
+
+       Thread thread = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(5000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getPreferencedFromSettingsLogin();
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+
+        thread.start();
     }
 
 

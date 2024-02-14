@@ -2,9 +2,11 @@ package pl.sda.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -46,8 +48,12 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString(PASSWORD, textPassword.getText().toString());
             editor.putString(IP_ADDRESS, textIP.getText().toString());
             editor.apply();
+
+
+            setMainView();
         }
-        public void loadData(){
+
+    public void loadData(){
             SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
             loginFromFile = sharedPreferences.getString(LOGIN,"");
             passwordFromFile = sharedPreferences.getString(PASSWORD,"");
@@ -59,4 +65,14 @@ public class LoginActivity extends AppCompatActivity {
             textPassword.setText(passwordFromFile);
             textIP.setText(ipFromFile);
         }
+
+
+    public void actionCancelButton(View view) {
+       setMainView();
     }
+
+    private void setMainView() {
+        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(myIntent);
+    }
+}

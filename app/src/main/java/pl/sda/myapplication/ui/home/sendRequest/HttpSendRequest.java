@@ -15,7 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
-import pl.sda.myapplication.LoginActivity;
 
 public class HttpSendRequest implements Callable {
 
